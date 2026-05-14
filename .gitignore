@@ -2,6 +2,9 @@
 dist/
 *.potext
 
+# Local API examples / credentials
+paddleocr_api.txt
+
 # Local dependencies / caches
 node_modules/
 .npm/
@@ -14,4 +17,3 @@ yarn-error.log*
 
 # Codex/Superpowers planning artifacts for local development
 docs/superpowers/
-
