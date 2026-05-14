@@ -12,6 +12,11 @@ jobs:
           fetch-depth: 1
       - name: Install zip
         run: sudo apt-get install -y jq
+      - name: Validate plugin files
+        run: |
+          node --check main.js
+          node --test test/main.test.js
+          jq empty info.json
       - id: getname
         run: |
           echo "NAME=$(cat info.json | jq '.id' | tr -d '"')" >> "$GITHUB_ENV"

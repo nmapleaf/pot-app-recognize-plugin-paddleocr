@@ -1,71 +1,55 @@
-# Pot-App 文字识别插件模板仓库 (以 [OCR Space](https://ocr.space/) 为例)
+# Pot-App PaddleOCR 文字识别插件
 
-### 此仓库为模板仓库，编写插件时可以直接由此仓库创建插件仓库
+这是一个用于 [Pot](https://pot-app.com/) 的文字识别插件。插件会把 Pot 截图 OCR 传入的图片提交到 PaddleOCR hosted API，等待异步任务完成后下载结果，并返回纯文本给 Pot，适合作为「截图翻译」的 OCR 输入。
 
-## 插件编写指南
+## 配置项
 
-### 1. 插件仓库创建
+安装插件后，在 Pot 的服务设置中配置：
 
-- 以此仓库为模板创建一个新的仓库
-- 仓库名为 `pot-app-recognize-plugin-<插件名>`，例如 `pot-app-recognize-plugin-ocrspace`
+- `Access Token`：PaddleOCR API token，必填。
+- `Model`：模型名称，留空时使用 `PaddleOCR-VL-1.5`。
+- `返回格式`：
+  - `纯文本（推荐）`：清理 Markdown 标记后返回，适合 Pot 截图翻译输入。
+  - `Markdown（保留表格/版面）`：保留 PaddleOCR 返回的 Markdown 文本，适合复制表格、标题和列表结构。
+- `轮询间隔`：查询任务状态的间隔，默认推荐 `5 秒`。
+- `任务超时`：最长等待时间，默认推荐 `120 秒`。
+- `方向分类`、`文档矫正`、`图表识别`：对应 PaddleOCR API 的 `optionalPayload`，默认关闭以降低普通截图 OCR 的耗时。
 
-### 2. 插件信息配置
+## 工作流程
 
-编辑 `info.json` 文件，修改以下字段：
+1. Pot 调用 `recognize(base64, lang, options)`。
+2. 插件把 base64 PNG 手动组装成 `multipart/form-data`。
+3. `POST https://paddleocr.aistudio-app.com/api/v2/ocr/jobs` 提交任务。
+4. 轮询 `GET /jobs/{jobId}`。
+5. 任务完成后下载 `resultUrl.jsonUrl`。
+6. 解析 JSONL 中的 `layoutParsingResults[*].markdown.text`。
+7. 根据 `返回格式` 配置返回纯文本或 Markdown。
 
-- `id`：插件唯一 id，必须以`[plugin]`开头，例如 `[plugin].com.pot-app.ocrspace`
-- `display`: 插件显示名称，例如 `OCR Space`
-- `homepage`: 插件主页，填写你的仓库地址即可，例如 `https://github.com/pot-app/pot-app-recognize-plugin-template`
-- `icon`: 插件图标，填写当前目录下的图标名称，例如 `icon.png`
-- `needs`: 插件依赖，一个数组，每个依赖为一个对象，包含以下字段：
-  - `key`: 依赖 key，对应该项依赖在配置文件中的名称，例如 `apikey`
-  - `display`: 依赖显示名称，对应用户显示的名称，例如 `API Key`
-  - `type`: 组件类型 `input` | `select`
-  - `options`: 选项列表(仅 select 组件需要)，例如 `{"engine_a":"Engina A","engine_b":"Engina B"}`
-- `language`: 插件支持的语言映射，将 pot 的语言代码和插件发送请求时的语言代码一一对应
+## 打包 Pot 插件
 
-### 3. 插件编写/编译
+将以下文件压缩为 zip：
 
-编辑 `main.js` 实现 `recognize` 函数
+- `main.js`
+- `info.json`
+- `icon.png`
 
-#### Input parameters
+然后把 zip 文件重命名为：
 
-```javascript
-// config: config map
-// detect: detected source language
-// setResult: function to set result text
-// utils: some tools
-//     http: tauri http module
-//     readBinaryFile: function
-//     readTextFile: function
-//     Database: tauri Database class
-//     CryptoJS: CryptoJS module
-//     cacheDir: cache dir path
-//     pluginDir: current plugin dir 
-//     osType: "Windows_NT" | "Darwin" | "Linux"
-async function recognize(base64, lang, options) {
-  const { config, utils } = options;
-  const { http, readBinaryFile, readTextFile, Database, CryptoJS, run, cacheDir, pluginDir, osType } = utils;
-  const { fetch, Body } = http;
-}
+```text
+plugin.com.pot-app.paddleocr.potext
 ```
 
-#### Return value
+即可在 Pot 的「添加外部插件」中安装。
 
-```javascript
-return "result";
+## 本地验证
+
+```bash
+node --check main.js
+node --test test/main.test.js
+node -e "JSON.parse(require('fs').readFileSync('info.json','utf8')); console.log('info.json ok')"
 ```
 
-### 4. 打包 pot 插件
+## 参考
 
-1. 将`main.js`文件和`info.json`以及图标文件压缩为 zip 文件。
-
-2. 将文件重命名为`<插件id>.potext`，例如`plugin.com.pot-app.ocrspace.potext`,即可得到 pot 需要的插件。
-
-## 自动编译打包
-
-本仓库配置了 Github Actions，可以实现推送后自动编译打包插件。
-
-每次将仓库推送到 GitHub 之后 actions 会自动运行，将打包好的插件上传到 artifact，在 actions 页面可以下载
-
-每次提交 Tag 之后，actions 会自动运行，将打包好的插件上传到 release，在 release 页面可以下载打包好的插件
+- `paddleocr_api.txt`：PaddleOCR API 示例流程。
+- Pot 文字识别插件模板：`recognize(base64, lang, options)`。

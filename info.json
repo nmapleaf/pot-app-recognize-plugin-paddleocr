@@ -1,37 +1,108 @@
 {
-  "id": "plugin.com.pot-app.ocrspace",
+  "id": "plugin.com.pot-app.paddleocr",
   "plugin_type": "recognize",
   "icon": "icon.png",
-  "display": "OCR Space",
-  "homepage": "https://github.com/pot-app/pot-app-recognize-plugin-template",
+  "display": "PaddleOCR",
+  "homepage": "https://github.com/pot-app/pot-app-recognize-plugin-paddleocr",
   "needs": [
     {
-      "key": "engine",
-      "display": "Engine",
-      "type": "select",
-      "options": { "1": "Engine 1", "2": "Engine 2", "3": "Engine 3" }
+      "key": "accessToken",
+      "display": "Access Token",
+      "type": "input"
     },
-    { "key": "apikey", "display": "Api Key", "type": "input" }
+    {
+      "key": "model",
+      "display": "Model",
+      "type": "input"
+    },
+    {
+      "key": "returnFormat",
+      "display": "返回格式",
+      "type": "select",
+      "options": {
+        "plain": "纯文本（推荐）",
+        "markdown": "Markdown（保留表格/版面）"
+      }
+    },
+    {
+      "key": "pollIntervalSeconds",
+      "display": "轮询间隔",
+      "type": "select",
+      "options": {
+        "3": "3 秒",
+        "5": "5 秒（推荐）",
+        "10": "10 秒"
+      }
+    },
+    {
+      "key": "timeoutSeconds",
+      "display": "任务超时",
+      "type": "select",
+      "options": {
+        "60": "60 秒",
+        "120": "120 秒（推荐）",
+        "300": "300 秒"
+      }
+    },
+    {
+      "key": "useDocOrientationClassify",
+      "display": "方向分类",
+      "type": "select",
+      "options": {
+        "false": "关闭（推荐）",
+        "true": "开启"
+      }
+    },
+    {
+      "key": "useDocUnwarping",
+      "display": "文档矫正",
+      "type": "select",
+      "options": {
+        "false": "关闭（推荐）",
+        "true": "开启"
+      }
+    },
+    {
+      "key": "useChartRecognition",
+      "display": "图表识别",
+      "type": "select",
+      "options": {
+        "false": "关闭（推荐）",
+        "true": "开启"
+      }
+    }
   ],
   "language": {
-    "auto": "eng",
-    "zh_cn": "chs",
-    "zh_tw": "cht",
-    "en": "eng",
-    "ja": "jpn",
-    "ko": "kor",
-    "fr": "fre",
-    "es": "spa",
-    "ru": "rus",
-    "de": "ger",
-    "it": "ita",
-    "tr": "tur",
-    "pt_pt": "por",
-    "pt_br": "por",
-    "vi": "vie",
-    "th": "tai",
-    "ar": "ara",
-    "hi": "hin",
-    "fa": "per"
+    "auto": "auto",
+    "zh_cn": "zh_cn",
+    "zh_tw": "zh_tw",
+    "yue": "yue",
+    "en": "en",
+    "ja": "ja",
+    "ko": "ko",
+    "fr": "fr",
+    "es": "es",
+    "ru": "ru",
+    "de": "de",
+    "it": "it",
+    "tr": "tr",
+    "pt_pt": "pt",
+    "pt_br": "pt",
+    "vi": "vi",
+    "id": "id",
+    "th": "th",
+    "ms": "ms",
+    "ar": "ar",
+    "hi": "hi",
+    "mn_mo": "mn",
+    "mn_cy": "mn",
+    "km": "km",
+    "nb_no": "nb",
+    "nn_no": "nn",
+    "fa": "fa",
+    "sv": "sv",
+    "pl": "pl",
+    "nl": "nl",
+    "uk": "uk"
   }
 }
